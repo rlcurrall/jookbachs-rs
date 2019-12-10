@@ -4,7 +4,6 @@ use actix_web::{
     web::{HttpRequest, HttpResponse, Path},
     Responder,
 };
-// use metaflac::Tag;
 use id3::Tag;
 use serde_json::json;
 
