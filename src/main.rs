@@ -30,6 +30,9 @@ async fn main() -> std::io::Result<()> {
             .service(track_controller::get_track_by_id)
             .service(track_controller::stream_track)
     })
+    // We can bind to a Unix Domain Socket
+    .bind_uds("/tmp/jookbachs.sock")?
+    // And/Or we can bind to an HTTP port
     .bind("127.0.0.1:8080")?
     .start()
     .await
