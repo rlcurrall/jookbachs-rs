@@ -23,6 +23,10 @@ pub async fn get_track_by_id(id: Path<u32>) -> impl Responder {
         "artist": md.artist().unwrap(),
         "album": md.album().unwrap(),
         "year": md.year().unwrap(),
+        "duration": md.duration().unwrap(),
+        "genre": md.genre().unwrap(),
+        "total_tracks": md.total_tracks().unwrap(),
+        "track": md.track().unwrap(),
     }))
 }
 
