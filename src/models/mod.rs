@@ -8,6 +8,12 @@ pub struct Artist {
     name: String,
 }
 
+#[derive(Insertable)]
+#[table_name = "artists"]
+pub struct NewArtist {
+    pub name: String,
+}
+
 #[derive(Identifiable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(Artist)]
 #[table_name = "albums"]

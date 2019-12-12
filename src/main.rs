@@ -4,9 +4,8 @@ extern crate diesel;
 use actix_cors::Cors;
 use actix_rt;
 use actix_web::{App, HttpServer};
-use diesel::prelude::*;
-use diesel::r2d2::{self, ConnectionManager};
 
+mod bootstrap;
 mod controllers;
 mod env;
 mod models;
@@ -20,11 +19,7 @@ async fn main() -> std::io::Result<()> {
     env::init();
 
     // Create connection pool for database
-    let conn_spec = std::env::var("DB_HOST").expect("DB_HOST");
-    let manager = ConnectionManager::<SqliteConnection>::new(conn_spec);
-    let pool = r2d2::Pool::builder()
-        .build(manager)
-        .expect("Failed to create pool.");
+    let pool = bootstrap::database();
 
     // Start application
     HttpServer::new(move || {
