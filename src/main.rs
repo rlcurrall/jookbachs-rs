@@ -4,22 +4,61 @@ extern crate diesel;
 use actix_cors::Cors;
 use actix_rt;
 use actix_web::{App, HttpServer};
+use diesel::prelude::*;
+use diesel::r2d2::{self, ConnectionManager, Pool};
+use dirs;
+use std::fs;
 
-mod bootstrap;
 mod controllers;
-mod env;
 mod models;
 mod schema;
 
 use controllers::{album_controller, artist_controller, track_controller};
 
+/// Set env variables
+pub fn set_env() {
+    // Get path for config
+    let config_dir = format!(
+        "{}/jookbachs",
+        dirs::config_dir().unwrap().to_str().unwrap()
+    );
+    // Create config directory if it does not exist
+    fs::create_dir_all(config_dir.clone()).unwrap();
+
+    // Get path to SQLite DB file
+    let db_path = format!("{}/jookbachs.db", config_dir);
+
+    // Set env variables
+    std::env::set_var("DB_HOST", db_path);
+    std::env::set_var("APP_HOST", "localhost:8080");
+    std::env::set_var("UI_HOST", "localhost:8000");
+}
+
+/// Get Database connection pool
+pub fn get_database_pool() -> Pool<ConnectionManager<SqliteConnection>> {
+    let conn_spec = std::env::var("DB_HOST").expect("DB_HOST");
+    let manager = ConnectionManager::<SqliteConnection>::new(conn_spec);
+    let pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
+
+    diesel_migrations::run_pending_migrations_in_directory(
+        &pool.get().unwrap(),
+        std::path::Path::new("migrations"),
+        &mut std::io::stdout(),
+    )
+    .unwrap();
+
+    pool
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // Initialize environment variables
-    env::init();
+    set_env();
 
     // Create connection pool for database
-    let pool = bootstrap::database();
+    let pool = get_database_pool();
 
     // Start application
     HttpServer::new(move || {

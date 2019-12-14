@@ -9,9 +9,9 @@ table! {
     albums (id) {
         id -> Integer,
         name -> Text,
-        year -> Integer,
-        picture -> Blob,
-        total_tracks -> Integer,
+        year -> Nullable<Integer>,
+        picture -> Nullable<Blob>,
+        total_tracks -> Nullable<Integer>,
         artist_id -> Integer,
     }
 }
@@ -20,12 +20,12 @@ table! {
     tracks (id) {
         id -> Integer,
         title -> Text,
-        year -> Integer,
-        number -> Integer,
+        year -> Nullable<Integer>,
+        number -> Nullable<Integer>,
         path -> Text,
         album_id -> Integer,
         artist_id -> Integer,
-        created_at -> Date,
-        updated_at -> Date,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
     }
 }
